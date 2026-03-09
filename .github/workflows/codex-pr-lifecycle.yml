@@ -1,0 +1,100 @@
+name: Codex PR lifecycle
+
+on:
+  pull_request:
+    types: [opened]
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  assign-codex-to-pr:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign Codex to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNodeId = context.payload.pull_request.node_id;
+            const codexBotNodeId = 'BOT_kgDODnSAjQ';
+            await github.graphql(`
+              mutation($assignableId: ID!, $assigneeIds: [ID!]!) {
+                addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+                  assignable { ... on PullRequest { number } }
+                }
+              }
+            `, { assignableId: prNodeId, assigneeIds: [codexBotNodeId] });
+            console.log(`Assigned Codex to PR #${context.payload.pull_request.number}`);
+
+  close-linked-issues:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close linked issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Find issues linked to this PR via the GraphQL timeline
+            const { repository } = await github.graphql(`
+              query($owner: String!, $repo: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $prNumber) {
+                    closingIssuesReferences(first: 20) {
+                      nodes { number title state }
+                    }
+                  }
+                }
+              }
+            `, { owner, repo, prNumber });
+
+            const issues = repository.pullRequest.closingIssuesReferences.nodes;
+            for (const issue of issues) {
+              if (issue.state === 'OPEN') {
+                await github.rest.issues.update({
+                  owner, repo,
+                  issue_number: issue.number,
+                  state: 'closed',
+                  state_reason: 'completed'
+                });
+                await github.rest.issues.createComment({
+                  owner, repo,
+                  issue_number: issue.number,
+                  body: `✅ Closed by PR #${prNumber} merge.`
+                });
+                console.log(`Closed issue #${issue.number}: ${issue.title}`);
+              }
+            }
+
+            if (issues.length === 0) {
+              // Fallback: parse PR body/title for "fix #N" or "closes #N" patterns
+              const text = `${context.payload.pull_request.title} ${context.payload.pull_request.body || ''}`;
+              const pattern = /(?:fix(?:es)?|close[sd]?|resolve[sd]?)\s+#(\d+)/gi;
+              let match;
+              while ((match = pattern.exec(text)) !== null) {
+                const issueNumber = parseInt(match[1], 10);
+                try {
+                  await github.rest.issues.update({
+                    owner, repo,
+                    issue_number: issueNumber,
+                    state: 'closed',
+                    state_reason: 'completed'
+                  });
+                  await github.rest.issues.createComment({
+                    owner, repo,
+                    issue_number: issueNumber,
+                    body: `✅ Closed by PR #${prNumber} merge.`
+                  });
+                  console.log(`Closed issue #${issueNumber} (from PR body/title)`);
+                } catch (e) {
+                  console.log(`Could not close issue #${issueNumber}: ${e.message}`);
+                }
+              }
+            }
