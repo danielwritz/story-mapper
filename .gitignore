@@ -1,8 +1,24 @@
+# Dependencies
 node_modules/
+
+# Builds
 dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
 .env
 .env.local
-*.db
-apps/api/data/
-coverage/
-.turbo/
+.env.*.local
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
