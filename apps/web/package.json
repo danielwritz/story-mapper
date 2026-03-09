@@ -1,0 +1,19 @@
+{
+  "name": "@story-mapper/web",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"frontend dev server not yet configured\"",
+    "build": "tsc -b .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@story-mapper/shared": "0.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}
