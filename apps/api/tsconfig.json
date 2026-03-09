@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@story-mapper/shared": ["../../packages/shared/src"],
+      "@story-mapper/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src"]
+}
