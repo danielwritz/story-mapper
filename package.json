@@ -1,0 +1,27 @@
+{
+  "name": "story-mapper",
+  "version": "1.0.0",
+  "description": "A canvas-based story mapping tool for creating technical requirements and functional user requirements.",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm --workspaces run test",
+    "build": "npm --workspaces run build",
+    "lint": "npm --workspaces run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielwritz/story-mapper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielwritz/story-mapper/issues"
+  },
+  "homepage": "https://github.com/danielwritz/story-mapper#readme"
+}
