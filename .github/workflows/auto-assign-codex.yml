@@ -1,0 +1,32 @@
+name: Auto-assign issues to Codex
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  assign-to-codex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign issue to Codex
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Add the 'codex' label to trigger Codex pickup
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['codex']
+            });
+
+            // Add a comment to confirm assignment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '🤖 **Assigned to Codex 5.3** — This issue has been labeled for automatic pickup by the Codex coding agent.\n\nWorkflow:\n1. Pull latest `main`\n2. Implement with tests\n3. Push directly to `main`\n4. Auto-close via commit message `fix #' + context.issue.number + '`'
+            });
