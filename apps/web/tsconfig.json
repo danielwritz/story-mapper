@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@story-mapper/shared": ["../../packages/shared/src"],
+      "@story-mapper/shared/*": ["../../packages/shared/src/*"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src", "vite.config.ts", "index.html"]
+}
