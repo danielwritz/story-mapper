@@ -47,6 +47,11 @@ npm install
 npm run dev
 ```
 
+## Workspace scripts
+
+- Run all tests: `npm test`
+- Start the web dev server: `npm run dev --workspace apps/web`
+
 ## Development Workflow
 
 1. Issues are created in GitHub with detailed acceptance criteria and test specifications
