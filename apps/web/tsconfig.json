@@ -1,14 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "composite": true,
-    "rootDir": "src",
-    "outDir": "dist",
-    "tsBuildInfoFile": "node_modules/.cache/web.tsbuildinfo",
-    "types": ["vitest"]
-  },
+  "files": [],
   "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
     { "path": "../../packages/shared" }
-  ],
-  "include": ["src"]
+  ]
 }
